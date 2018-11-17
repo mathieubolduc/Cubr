@@ -1,7 +1,6 @@
-from enum import Enum
 import numpy as np
 
-class CubeColor(Enum):
+class CubeColor:
     UNKNOWN = 0
     WHITE = 1
     YELLOW = 2
@@ -9,6 +8,9 @@ class CubeColor(Enum):
     ORANGE = 4
     GREEN = 5
     BLUE = 6
+
+    ALL = [WHITE, YELLOW, RED, ORANGE, GREEN, BLUE]
+    
 
 centerMap = {   CubeColor.WHITE:    (2, 2, 0),  # bottom
                 CubeColor.YELLOW:   (2, 2, 4),  # top
@@ -18,8 +20,14 @@ centerMap = {   CubeColor.WHITE:    (2, 2, 0),  # bottom
                 CubeColor.BLUE:     (0, 2, 2)   # left
             }
 
+def getSolvedCube():
+    cube = Cube()
+    for side in CubeColor.ALL:
+        cube.setSide(side, np.full((3, 3), side))
+    return cube
+
 class Cube:
-    def __init__(self):
+    def __init__(self, hypercube=None):
         # hypercube is a 5x5x5 with the center 3x3s as the sides
         #
         #  ^ z
@@ -29,6 +37,9 @@ class Cube:
         #  | /
         #  ----------->  x
         self.hypercube = np.zeros((5, 5, 5))
+
+    def copy(self):
+        return Cube(np.array(self.hypercube))
 
 
     """ Takes a side (WHITE, RED, etc) and a 3x3 array and stores it in the hypercube"""
@@ -59,22 +70,67 @@ class Cube:
         center = centerMap[side]
         minmax = []
         axes = []
-        for _ in range(3):
-            minmax.append(0 if center[0] <= 2 else 3)
-            minmax.append(4 if center[0] >= 2 else 1)
-            axes.append(1 if center[0] == 2 else 0)
+        for i in range(3):
+            minmax.append(0 if center[i] <= 2 else 3)
+            minmax.append(5 if center[i] >= 2 else 2)
+            if(center[i] == 2):
+                axes.append(i)
 
         # data is 2x5x5 or 5x2x5 or 5x5x2
-        data = self.hypercube[minmax[0] : minmax[1]][minmax[2] : minmax[3]][minmax[4] : minmax[5]]
-        self.hypercube[minmax[0] : minmax[1]][minmax[2] : minmax[3]][minmax[4] : minmax[5]] = np.rot90(data, angle / 90, axes)
+        data = self.hypercube[minmax[0] : minmax[1], minmax[2] : minmax[3], minmax[4] : minmax[5]]
+        self.hypercube[minmax[0] : minmax[1], minmax[2] : minmax[3], minmax[4] : minmax[5]] = np.rot90(data, angle / 90, axes)
+
+    """ Finds a cubie and returns its position. Cubies can be centers (len = 1), edges (len = 2) or corners (len = 3)"""
+    """ The position is an array with the same size as the cubie, containing the positions (x, y, z)"""
+    def find(self, cubie):
+        if(cubie.size == 2):
+            # edges
+            edges = [   [(2, 1, 0), (2, 0, 1)],
+                        [(1, 2, 0), (0, 2, 1)],
+                        [(3, 2, 0), (4, 2, 1)],
+                        [(2, 3, 0), (2, 4, 1)],
+                        [(1, 0, 2), (0, 1, 2)],
+                        [(3, 0, 2), (4, 1, 2)],
+                        [(0, 3, 2), (1, 4, 2)],
+                        [(4, 3, 2), (3, 4, 2)],
+                        [(2, 1, 3), (2, 0, 4)],
+                        [(1, 2, 3), (0, 2, 4)],
+                        [(3, 2, 3), (4, 2, 4)],
+                        [(2, 3, 3), (2, 4, 4)]]
+            
+            result = [] * 2
+            for edge in edges:
+                for i in range(2):
+                    color = self.hypercube[edge[i][0]][edge[i][1]][edge[i][2]]
+                    if(color in cubie):
+                        result[cubie.index(color)] = edge[i]
+                    else:
+                        break
+                else:
+                    return result
+
+        elif(cubie.size == 3):
+            # corners
+            result = [] * 3
+            for x, y, z in zip([1, 3], [1, 3], [1, 3]):
+                positions = [(x, y, 0 if z==1 else 4), (x, 0 if y==1 else 4, z), (0 if x==1 else 4, y, z)]
+                for i in range(3):
+                    color = self.hypercube[positions[i][0]][positions[i][1]][positions[i][2]]
+                    if(color in cubie):
+                        result[cubie.index(color)] = positions[i]
+                    else:
+                        break
+                else:
+                    return result
+
+        else:
+            return None
 
 
 
-testCube = Cube()
 
-data = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-
-testCube.setSide(CubeColor.WHITE, data)
-testCube.rotate(CubeColor.WHITE)
-newData = testCube.getSide(CubeColor.WHITE)
-print(newData)
+""" tests"""
+if(__name__ == "__main__"):
+    testCube = getSolvedCube()
+    
+    print(testCube.hypercube)
