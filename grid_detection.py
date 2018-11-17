@@ -100,6 +100,11 @@ def make_grid(length, angle1, angle2, center_point):
                       v2[0], center_point[1] - v1[1] - v2[1])
     points = [top_left_point]
     last_x_point = top_left_point
+    last_y_point = top_left_point
+    for j in range(2):
+        new_point = (last_y_point[0] + v2[0], last_y_point[1] + v2[1])
+        points.append(new_point)
+        last_y_point = new_point
     for i in range(2):
         new_point = (last_x_point[0] + v1[0], last_x_point[1] + v1[1])
         points.append(new_point)
