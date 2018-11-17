@@ -5,7 +5,7 @@ import numpy as np
 
 def detect_grid(center_points: List[Tuple[float, float]]):
     if len(center_points) < 4:
-        return None, None, None, None
+        return None, None, None, None, None
 
     # 1. Get vectors of the closest points (that are also not too close)
     total_vectors = []
@@ -36,6 +36,7 @@ def detect_grid(center_points: List[Tuple[float, float]]):
     # 3. Take the median length, the 2 most common angles
     lengths = list(map(lambda v: math.hypot(v[0], v[1]), total_vectors))
     median_length = np.median(lengths)
+    std_dev = np.std(lengths)
     angles = list(map(lambda v: math.atan2(v[1], v[0]), total_vectors))
     # Group angles based on the differences between angles
     ref_angles = []
@@ -89,7 +90,7 @@ def detect_grid(center_points: List[Tuple[float, float]]):
     center_point = center_point_pair[1] if center_point_pair[0] < 5 else (
         x_avg, y_avg)
 
-    return median_length, a1, a2, center_point
+    return median_length, std_dev, a1, a2, center_point
 
 
 def make_grid(length, angle1, angle2, center_point):
