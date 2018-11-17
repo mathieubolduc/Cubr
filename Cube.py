@@ -1,7 +1,6 @@
-from enum import Enum
 import numpy as np
 
-class CubeColor(Enum):
+class CubeColor:
     UNKNOWN = 0
     WHITE = 1
     YELLOW = 2
@@ -10,6 +9,9 @@ class CubeColor(Enum):
     GREEN = 5
     BLUE = 6
 
+    ALL = [WHITE, YELLOW, RED, ORANGE, GREEN, BLUE]
+    
+
 centerMap = {   CubeColor.WHITE:    (2, 2, 0),  # bottom
                 CubeColor.YELLOW:   (2, 2, 4),  # top
                 CubeColor.RED:      (2, 0, 2),  # front
@@ -17,6 +19,12 @@ centerMap = {   CubeColor.WHITE:    (2, 2, 0),  # bottom
                 CubeColor.GREEN:    (4, 2, 2),  # right
                 CubeColor.BLUE:     (0, 2, 2)   # left
             }
+
+def getSolvedCube():
+    cube = Cube()
+    for side in CubeColor.ALL:
+        cube.setSide(side, np.full((3, 3), side))
+    return cube
 
 class Cube:
     def __init__(self, hypercube=None):
@@ -123,12 +131,6 @@ class Cube:
 
 """ tests"""
 if(__name__ == "__main__"):
-    testCube = Cube()
-
-    data = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-
-    testCube.setSide(CubeColor.WHITE, data)
-    print(testCube.getSide(CubeColor.WHITE))
-    print()
-    testCube.rotate(CubeColor.YELLOW)
-    print(testCube.getSide(CubeColor.WHITE))
+    testCube = getSolvedCube()
+    
+    print(testCube.hypercube)
