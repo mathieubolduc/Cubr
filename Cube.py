@@ -19,7 +19,7 @@ centerMap = {   CubeColor.WHITE:    (2, 2, 0),  # bottom
             }
 
 class Cube:
-    def __init__(self):
+    def __init__(self, hypercube=None):
         # hypercube is a 5x5x5 with the center 3x3s as the sides
         #
         #  ^ z
@@ -29,6 +29,9 @@ class Cube:
         #  | /
         #  ----------->  x
         self.hypercube = np.zeros((5, 5, 5))
+
+    def copy(self):
+        return Cube(np.array(self.hypercube))
 
 
     """ Takes a side (WHITE, RED, etc) and a 3x3 array and stores it in the hypercube"""
