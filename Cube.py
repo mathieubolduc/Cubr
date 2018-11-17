@@ -59,22 +59,25 @@ class Cube:
         center = centerMap[side]
         minmax = []
         axes = []
-        for _ in range(3):
-            minmax.append(0 if center[0] <= 2 else 3)
-            minmax.append(4 if center[0] >= 2 else 1)
-            axes.append(1 if center[0] == 2 else 0)
+        for i in range(3):
+            minmax.append(0 if center[i] <= 2 else 3)
+            minmax.append(5 if center[i] >= 2 else 2)
+            if(center[i] == 2):
+                axes.append(i)
 
         # data is 2x5x5 or 5x2x5 or 5x5x2
-        data = self.hypercube[minmax[0] : minmax[1]][minmax[2] : minmax[3]][minmax[4] : minmax[5]]
-        self.hypercube[minmax[0] : minmax[1]][minmax[2] : minmax[3]][minmax[4] : minmax[5]] = np.rot90(data, angle / 90, axes)
+        data = self.hypercube[minmax[0] : minmax[1], minmax[2] : minmax[3], minmax[4] : minmax[5]]
+        self.hypercube[minmax[0] : minmax[1], minmax[2] : minmax[3], minmax[4] : minmax[5]] = np.rot90(data, angle / 90, axes)
 
 
+""" tests"""
+if(__name__ == "__main__"):
+    testCube = Cube()
 
-testCube = Cube()
+    data = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 
-data = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-
-testCube.setSide(CubeColor.WHITE, data)
-testCube.rotate(CubeColor.WHITE)
-newData = testCube.getSide(CubeColor.WHITE)
-print(newData)
+    testCube.setSide(CubeColor.WHITE, data)
+    print(testCube.getSide(CubeColor.WHITE))
+    print()
+    testCube.rotate(CubeColor.YELLOW)
+    print(testCube.getSide(CubeColor.WHITE))
