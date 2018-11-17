@@ -35,9 +35,9 @@ class Cube:
     def setSide(self, side, data):
         center = centerMap[side]
         count = 0
-        for x in range(5) if center[0] == 2 else (center[0]):
-            for y in range(5) if center[1] == 2 else (center[1]):
-                for z in range(5) if center[2] == 2 else (center[2]):
+        for x in range(1, 4, 1) if center[0] == 2 else (center[0]):
+            for y in range(1, 4, 1) if center[1] == 2 else (center[1]):
+                for z in range(1, 4, 1) if center[2] == 2 else (center[2]):
                     self.hypercube[x][y][z] = data[count % 3][count / 3]
                     count += 1
 
@@ -45,14 +45,22 @@ class Cube:
     def getSide(self, side):
         center = centerMap[side]
         count = 0
-        data = [[] * 3 for _ in range(3)]
-        for x in range(0, 5, 1) if center[0] == 2 else (center[0]):
-            for y in range(0, 5, 1) if center[1] == 2 else (center[1]):
-                for z in range(0, 5, 1) if center[2] == 2 else (center[2]):
+        data = np.zeros(3, 3)
+        for x in range(1, 4, 1) if center[0] == 2 else (center[0]):
+            for y in range(1, 4, 1) if center[1] == 2 else (center[1]):
+                for z in range(1, 4, 1) if center[2] == 2 else (center[2]):
                     data[count % 3][count / 3] = self.hypercube[x][y][z]
                     count += 1
 
 
-    # 90 deg rotation of a side clockwise
-    def rotate(self, side):
-        ...
+    """ 90 deg rotation of a side clockwise """
+    def rotate(self, side, angle = 90):
+        center = centerMap[side]
+        minmax = np.zeros(6)
+        for i in range(3):
+            minmax[i*2] = 0 if center[0] <= 2 else 3
+            minmax[1*2 + 1] = 4 if center[0] >= 2 else 1
+
+        # data is 2x5x5 or 5x2x5 or 5x5x2
+        data = self.hypercube[minmax[0] : minmax[1], minmax[2] : minmax[3], minmax[4] : minmax[5]]
+        self.hypercube[minmax[0] : minmax[1], minmax[2] : minmax[3], minmax[4] : minmax[5]] = np.rot90(data, angle / 90, axes=(1, 0))
