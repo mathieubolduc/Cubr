@@ -26,6 +26,28 @@ def getSolvedCube():
         cube.setSide(side, np.full((3, 3), side))
     return cube
 
+def getScrambledCube():
+    cube = getSolvedCube()
+    for _ in range(100):
+        cube.rotate(np.random.randint(1, 6), np.random.randint(-1, 1) * 90)
+    return cube
+
+def getSideFromPosition(pos):
+    if pos[0] == 0:
+        return CubeColor.BLUE
+    elif pos[0] == 4:
+        return CubeColor.GREEN
+    elif pos[1] == 0:
+        return CubeColor.RED
+    elif pos[1] == 4:
+        return CubeColor.ORANGE
+    elif pos[2] == 0:
+        return CubeColor.WHITE
+    elif pos[2] == 4:
+        return CubeColor.YELLOW
+    else:
+        return CubeColor.UNKNOWN
+
 class Cube:
     def __init__(self, hypercube=None):
         # hypercube is a 5x5x5 with the center 3x3s as the sides
@@ -36,19 +58,21 @@ class Cube:
         #  |  /
         #  | /
         #  ----------->  x
-        self.hypercube = np.zeros((5, 5, 5))
+        if hypercube is None:
+            hypercube = np.zeros((5, 5, 5))
+        self.hypercube = hypercube
 
     def copy(self):
-        return Cube(np.array(self.hypercube))
+        return Cube(np.copy(self.hypercube))
 
 
     """ Takes a side (WHITE, RED, etc) and a 3x3 array and stores it in the hypercube"""
     def setSide(self, side, data):
         center = centerMap[side]
         count = 0
-        for x in range(1, 4, 1) if center[0] == 2 else [center[0]]:
+        for z in range(1, 4, 1) if center[2] == 2 else [center[2]]:
             for y in range(1, 4, 1) if center[1] == 2 else [center[1]]:
-                for z in range(1, 4, 1) if center[2] == 2 else [center[2]]:
+                for x in range(1, 4, 1) if center[0] == 2 else [center[0]]:
                     self.hypercube[x][y][z] = data[count % 3][count // 3]
                     count += 1
 
@@ -57,9 +81,9 @@ class Cube:
         center = centerMap[side]
         count = 0
         data = np.zeros((3, 3))
-        for x in range(1, 4, 1) if center[0] == 2 else [center[0]]:
+        for z in range(1, 4, 1) if center[2] == 2 else [center[2]]:
             for y in range(1, 4, 1) if center[1] == 2 else [center[1]]:
-                for z in range(1, 4, 1) if center[2] == 2 else [center[2]]:
+                for x in range(1, 4, 1) if center[0] == 2 else [center[0]]:
                     data[count % 3][count // 3] = self.hypercube[x][y][z]
                     count += 1
         return data
@@ -67,6 +91,9 @@ class Cube:
 
     """ 90 deg rotation of a side clockwise """
     def rotate(self, side, angle = 90):
+        if side == CubeColor.YELLOW or side == CubeColor.RED or side == CubeColor.GREEN:
+            angle *= -1
+
         center = centerMap[side]
         minmax = []
         axes = []
@@ -83,7 +110,7 @@ class Cube:
     """ Finds a cubie and returns its position. Cubies can be centers (len = 1), edges (len = 2) or corners (len = 3)"""
     """ The position is an array with the same size as the cubie, containing the positions (x, y, z)"""
     def find(self, cubie):
-        if(cubie.size == 2):
+        if(len(cubie) == 2):
             # edges
             edges = [   [(2, 1, 0), (2, 0, 1)],
                         [(1, 2, 0), (0, 2, 1)],
@@ -93,12 +120,12 @@ class Cube:
                         [(3, 0, 2), (4, 1, 2)],
                         [(0, 3, 2), (1, 4, 2)],
                         [(4, 3, 2), (3, 4, 2)],
-                        [(2, 1, 3), (2, 0, 4)],
-                        [(1, 2, 3), (0, 2, 4)],
-                        [(3, 2, 3), (4, 2, 4)],
-                        [(2, 3, 3), (2, 4, 4)]]
+                        [(2, 1, 4), (2, 0, 3)],
+                        [(1, 2, 4), (0, 2, 3)],
+                        [(3, 2, 4), (4, 2, 3)],
+                        [(2, 3, 4), (2, 4, 3)]]
             
-            result = [] * 2
+            result = [0, 0]
             for edge in edges:
                 for i in range(2):
                     color = self.hypercube[edge[i][0]][edge[i][1]][edge[i][2]]
@@ -109,22 +136,23 @@ class Cube:
                 else:
                     return result
 
-        elif(cubie.size == 3):
+        elif(len(cubie) == 3):
             # corners
-            result = [] * 3
-            for x, y, z in zip([1, 3], [1, 3], [1, 3]):
-                positions = [(x, y, 0 if z==1 else 4), (x, 0 if y==1 else 4, z), (0 if x==1 else 4, y, z)]
-                for i in range(3):
-                    color = self.hypercube[positions[i][0]][positions[i][1]][positions[i][2]]
-                    if(color in cubie):
-                        result[cubie.index(color)] = positions[i]
-                    else:
-                        break
-                else:
-                    return result
+            result = [0, 0, 0]
+            for x in [1, 3]:
+                for y in [1, 3]:
+                    for z in [1, 3]:
+                        positions = [(x, y, 0 if z==1 else 4), (x, 0 if y==1 else 4, z), (0 if x==1 else 4, y, z)]
+                        for i in range(3):
+                            color = self.hypercube[positions[i][0]][positions[i][1]][positions[i][2]]
+                            if(color in cubie):
+                                result[cubie.index(color)] = positions[i]
+                            else:
+                                break
+                        else:
+                            return result
 
-        else:
-            return None
+        return None
 
 
 
@@ -132,5 +160,10 @@ class Cube:
 """ tests"""
 if(__name__ == "__main__"):
     testCube = getSolvedCube()
+    testCube.rotate(CubeColor.RED)
+    location = testCube.find([CubeColor.WHITE, CubeColor.RED])
+    print(location)
+    print(testCube.hypercube[location[0][0], location[0][1], location[0][2]])
+    print(testCube.hypercube[location[1][0], location[1][1], location[1][2]])
     
     print(testCube.hypercube)
