@@ -8,6 +8,7 @@ import json
 from Cube import *
 from CubeSolver import *
 from enum import Enum
+from CaptureCube import *
 
 class MessageType(Enum):
     Reset = 0,
@@ -18,7 +19,9 @@ class MessageType(Enum):
 async def hello(websocket, path):
     print("Connection Established");
 
-    cube = getScrambledCube()
+
+
+    cube = show_webcam(mirror=True) #getScrambledCube()
     solver = CubeSolver(cube)
     solver.computeMoves()
     solution = solver.toElli()
