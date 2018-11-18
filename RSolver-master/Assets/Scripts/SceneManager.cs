@@ -122,11 +122,6 @@ public class SceneManager : MonoBehaviour
     {
         HandleServerMessage();
         HandleInput();
-
-        if (rotateCamera)
-        {
-            Camera.main.transform.RotateAround(Vector3.zero, Vector3.up, Time.deltaTime * 10);
-        }
     }
 
     private void HandleInput()
@@ -193,7 +188,7 @@ public class SceneManager : MonoBehaviour
 
         m_currentMousePos = Input.mousePosition;
 
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(0))
         {
             m_delta = m_currentMousePos - m_lastMousePos;
             m_delta.x /= Screen.currentResolution.width;

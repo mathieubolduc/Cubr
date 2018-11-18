@@ -1310,9 +1310,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Target: {fileID: 2019409170}
   phi: 0
-  theta: 45
+  theta: 64
   distance: 10
   rotateSpeed: 360
+  RotateCamera: 1
+  DelayToRotate: 3
 --- !u!1 &828333051
 GameObject:
   m_ObjectHideFlags: 0
