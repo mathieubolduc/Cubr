@@ -45,3 +45,33 @@ OLL_EDGE    = [ CubeRotation(CubeColor.RED, -90),
                 CubeRotation(CubeColor.BLUE, 90),
                 CubeRotation(CubeColor.RED, 90),
                 ]
+
+SUNE        = [ CubeRotation(CubeColor.GREEN, 90),
+                CubeRotation(CubeColor.YELLOW, 90),
+                CubeRotation(CubeColor.GREEN, -90),
+                CubeRotation(CubeColor.YELLOW, 90),
+                CubeRotation(CubeColor.GREEN, 90),
+                CubeRotation(CubeColor.YELLOW, 180),
+                CubeRotation(CubeColor.GREEN, -90),
+                ]
+
+PLL_A       = [ CubeRotation(CubeColor.BLUE, 90),
+                CubeRotation(CubeColor.RED, -90),
+                CubeRotation(CubeColor.BLUE, 90),
+                CubeRotation(CubeColor.ORANGE, 180),
+                CubeRotation(CubeColor.BLUE, -90),
+                CubeRotation(CubeColor.RED, 90),
+                CubeRotation(CubeColor.BLUE, 90),
+                CubeRotation(CubeColor.ORANGE, 180),
+                CubeRotation(CubeColor.BLUE, 180),
+                ]
+
+GHOST       = [ CubeRotation(CubeColor.BLUE, 90),
+                CubeRotation(CubeColor.WHITE, 90),
+                CubeRotation(CubeColor.BLUE, -90),
+                CubeRotation(CubeColor.WHITE, -90),
+                CubeRotation(CubeColor.BLUE, 90),
+                CubeRotation(CubeColor.WHITE, 90),
+                CubeRotation(CubeColor.BLUE, -90),
+                CubeRotation(CubeColor.WHITE, -90),
+                ]

@@ -1,6 +1,7 @@
 from Cube import *
 from collections import deque
 from Algorithms import *
+from Display import plotCube
 
 class CubeRotation:
     def __init__(self, side, angle=90):
@@ -22,12 +23,12 @@ class CubeSolver:
     def _addMove(self, cube, move):
         if move.angle != 0:
             _doMove(cube, move)
-            if len(self.moves) > 0 and self.moves[-1].side == move.side:
-                self.moves[-1].angle = (self.moves[-1].angle + move.angle) % 360
-                if self.moves[-1].angle == 0:
-                    self.moves.pop()
-            else:
-                self.moves.append(move)
+            # if len(self.moves) > 0 and self.moves[-1].side == move.side:
+            #     self.moves[-1].angle = (self.moves[-1].angle + move.angle) % 360
+            #     if self.moves[-1].angle == 0:
+            #         self.moves.pop()
+            # else:
+            self.moves.append(move)
 
     def _addAlgorithm(self, cube, algorithm):
         for move in algorithm:
@@ -184,25 +185,145 @@ class CubeSolver:
                     self._addMove(cube, CubeRotation(CubeColor.YELLOW))
                     edgePos = cube.find(edge)
                 currentSide = getSideFromPosition(edgePos[j])
-                algo = rotateAlgo(F2L, currentSide)
                 sides = [CubeColor.RED, CubeColor.GREEN, CubeColor.ORANGE, CubeColor.BLUE]
                 left = sides[(sides.index(currentSide) + 1) % 4]
+                algo = F2L
                 if edge[(j+1) % 2] != left:
                     algo = flipAlgo(algo)
+                algo = rotateAlgo(algo, currentSide)
                 self._addAlgorithm(cube, algo)
+
 
 
         # edge orientation
         yellowFace = cube.getSide(CubeColor.YELLOW)
-        if yellowFace[0][1] != CubeColor.YELLOW:
-            ...
+        if np.all([yellowFace[location[0]][location[1]] != CubeColor.YELLOW for location in [(0, 1), (1, 0), (1, 2), (2, 1)]]):
+            # no yellow yet, do the algo anywhere
+            self._addAlgorithm(cube, OLL_EDGE)
+            yellowFace = cube.getSide(CubeColor.YELLOW)
+
+        currentSide = 0
+        if yellowFace[0][1] == CubeColor.YELLOW and yellowFace[1][2] != CubeColor.YELLOW:
+            currentSide = CubeColor.ORANGE
+        elif yellowFace[1][2] == CubeColor.YELLOW and yellowFace[2][1] != CubeColor.YELLOW:
+            currentSide = CubeColor.GREEN
+        elif yellowFace[2][1] == CubeColor.YELLOW and yellowFace[1][0] != CubeColor.YELLOW:
+            currentSide = CubeColor.RED
+        elif yellowFace[1][0] == CubeColor.YELLOW and yellowFace[0][1] != CubeColor.YELLOW:
+            currentSide = CubeColor.BLUE
+        
+        # copycube = cube.copy()
+        if currentSide != 0:
+            algo = rotateAlgo(OLL_EDGE, currentSide)
+            # j = 0
+            while not np.all([yellowFace[location[0]][location[1]] == CubeColor.YELLOW for location in [(0, 1), (1, 0), (1, 2), (2, 1)]]):
+                self._addAlgorithm(cube, algo)
+                yellowFace = cube.getSide(CubeColor.YELLOW)
+                # j += 1
+                # if j > 10:
+                #     print(currentSide)
+                #     plotCube(copycube)
+                #     plotCube(cube)
 
 
+        # edge placement
+        currentSide = 0
+        for i in range(4):
+            good = 0
+            for side in [CubeColor.RED, CubeColor.BLUE, CubeColor.ORANGE, CubeColor.GREEN]:
+                edge = [CubeColor.YELLOW, side]
+                edgePos = cube.find(edge)
+                desiredPos = solvedCube.find(edge)
+                if np.all([edgePos[i] == desiredPos[i] for i in range(2)]):
+                    good += 1
+                    currentSide = side
+            if good == 4 or good == 1:
+                break
+            cube.rotate(CubeColor.YELLOW)
+        else:
+            # random sune
+            self._addAlgorithm(cube, SUNE)
+            for i in range(4):
+                good = 0
+                for side in [CubeColor.RED, CubeColor.BLUE, CubeColor.ORANGE, CubeColor.GREEN]:
+                    edge = [CubeColor.YELLOW, side]
+                    edgePos = cube.find(edge)
+                    desiredPos = solvedCube.find(edge)
+                    if np.all([edgePos[i] == desiredPos[i] for i in range(2)]):
+                        good += 1
+                        currentSide = side
+                if good == 4 or good == 1:
+                    break
+                cube.rotate(CubeColor.YELLOW)
+                    
+        if good == 1:
+            algo = rotateAlgo(SUNE, currentSide)
+            self._addAlgorithm(cube, algo)
+            for side in [CubeColor.RED, CubeColor.BLUE, CubeColor.ORANGE, CubeColor.GREEN]:
+                edge = [CubeColor.YELLOW, side]
+                edgePos = cube.find(edge)
+                desiredPos = solvedCube.find(edge)
+                if not np.all([edgePos[i] == desiredPos[i] for i in range(2)]):
+                    self._addAlgorithm(cube, algo)
+                    break
 
 
-        print(cube.hypercube)
+        # corner placement
+        sides = [CubeColor.RED, CubeColor.BLUE, CubeColor.ORANGE, CubeColor.GREEN]
+        currentSide = 0
+        for i in range(4): 
+            good = 0
+            for i in range(4):
+                corner = [CubeColor.YELLOW, sides[i], sides[(i+1)%4]]
+                cornerPos = cube.find(corner)
+                desiredPos = solvedCube.find(corner)
+                if np.any([np.all([cornerPos[(i+j)%3] == desiredPos[i] for i in range(3)]) for j in range(3)]):
+                    good += 1
+                    currentSide = i
+            if good == 4 or good == 1:
+                break
+            cube.rotate(CubeColor.YELLOW)
+        else:
+            self._addAlgorithm(cube, PLL_A)
+            for i in range(4): 
+                good = 0
+                for i in range(4):
+                    corner = [CubeColor.YELLOW, sides[i], sides[(i+1)%4]]
+                    cornerPos = cube.find(corner)
+                    desiredPos = solvedCube.find(corner)
+                    if np.any([np.all([cornerPos[(i+j)%3] == desiredPos[i] for i in range(3)]) for j in range(3)]):
+                        good += 1
+                        currentSide = i
+                if good == 4 or good == 1:
+                    break
+                cube.rotate(CubeColor.YELLOW)
+        
+        if good == 1:
+            corner = [CubeColor.WHITE, sides[currentSide], sides[(currentSide+1)%4]]
+            desiredPos = solvedCube.find(corner)
+            currentSide = getSideFromPosition(desiredPos[2])
+            algo = rotateAlgo(PLL_A, currentSide)
+            self._addAlgorithm(cube, algo)
+            for i in range(4):
+                corner = [CubeColor.YELLOW, sides[i], sides[(i+1)%4]]
+                cornerPos = cube.find(corner)
+                desiredPos = solvedCube.find(corner)
+                if not np.any([np.all([cornerPos[(i+j)%3] == desiredPos[i] for i in range(3)]) for j in range(3)]):
+                    self._addAlgorithm(cube, algo)
+                    break
+        
 
+        # corner orientation
+        angle = 0
+        for i in range(4):
+            corner = [CubeColor.YELLOW, sides[i], sides[(i+1)%4]]
+            cornerPos = cube.find(corner)
+            while cornerPos[0][2] != 4:
+                self._addAlgorithm(cube, GHOST)
+                cornerPos = cube.find(corner)
+            self._addMove(cube, CubeRotation(CubeColor.YELLOW, -90))
 
+        plotCube(cube)
 
 
 
@@ -213,12 +334,7 @@ if(__name__ == "__main__"):
     for _ in range(1):
         testCube = getScrambledCube()
         # testCube = getSolvedCube()
-        # testCube.rotate(CubeColor.RED, -90)
-        # testCube.rotate(CubeColor.YELLOW, -90)
-        # testCube.rotate(CubeColor.RED, 90)
-        # testCube.rotate(CubeColor.ORANGE, -90)
-        # testCube.rotate(CubeColor.YELLOW, -90)
-        # testCube.rotate(CubeColor.ORANGE, 90)
         solver = CubeSolver(testCube)
         solver.computeMoves()
         print(len(solver.moves))
+        
