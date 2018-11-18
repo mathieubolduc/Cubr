@@ -9,6 +9,9 @@ from Cube import *
 
 
 def show_webcam(mirror=False):
+    choice = input("Scan real cube? (y/n)")
+    if choice != "y":
+        return getScrambledCube()
     cam = cv2.VideoCapture(0)
     cam.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
     # cam.set(cv2.CAP_PROP_EXPOSURE,0.01)
