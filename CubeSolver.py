@@ -353,6 +353,7 @@ class CubeSolver:
 
 """ tests"""
 if(__name__ == "__main__"):
+    pass
     # for _ in range(100):
     #     testCube = getScrambledCube()
     #     solver = CubeSolver(testCube)

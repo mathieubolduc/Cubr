@@ -1,0 +1,28 @@
+﻿<Properties StartupConfiguration="{6FD1390B-24E9-4F78-3989-BD97CF9B4A53}|">
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="Unity.Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/RubiksCube.cs">
+    <Files>
+      <File FileName="Assets/Scripts/RubiksCubePrefab.cs" Line="9" Column="20" NotebookId="1" />
+      <File FileName="Assets/Scripts/SceneManager.cs" Line="115" Column="6" NotebookId="1" />
+      <File FileName="Assets/Scripts/CubePrefab.cs" Line="9" Column="32" NotebookId="1" />
+      <File FileName="Assets/Scripts/Solver.cs" Line="65" Column="32" NotebookId="1" />
+      <File FileName="Assets/Scripts/RubksMessage.cs" Line="11" Column="5" NotebookId="1" />
+      <File FileName="Assets/Scripts/UI/UIManager.cs" Line="20" Column="28" NotebookId="1" />
+      <File FileName="Assets/Scripts/RubiksCube.cs" Line="28" Column="17" NotebookId="1" />
+    </Files>
+    <FloatingWindows>
+      <FloatingWindow WindowId="1" X="1440" Y="23" Width="1920" Height="983">
+        <Files>
+          <File FileName="Assets/Scripts/Cube.cs" Line="5" Column="14" />
+          <File FileName="../../Desktop/WebsocketTest/Assets/Scripts/WebsocketTest.cs" Line="70" Column="2" />
+        </Files>
+      </FloatingWindow>
+    </FloatingWindows>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+</Properties>
