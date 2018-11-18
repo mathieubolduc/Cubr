@@ -74,16 +74,20 @@ class Cube:
         elif side == CubeColor.RED:
             data = np.rot90(data, -1)
             data = np.flip(data, axis = (1))
+            data = np.rot90(data, 2)
         elif side == CubeColor.GREEN:
             data = np.rot90(data, -1)
             data = np.flip(data, axis = (1))
+            data = np.rot90(data, 2)
         elif side == CubeColor.ORANGE:
             data = np.rot90(data, -1)
+            data = np.rot90(data, 2)
         elif side == CubeColor.BLUE:
             data = np.rot90(data, -1)
         elif side == CubeColor.YELLOW:
             data = np.rot90(data, -1)
             data = np.flip(data, axis = (1))
+            data = np.rot90(data, 2)
 
         center = centerMap[side]
         count = 0
