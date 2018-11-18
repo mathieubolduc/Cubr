@@ -3,6 +3,15 @@ from collections import deque
 from Algorithms import *
 from Display import plotCube
 
+elliMap = { CubeColor.RED: 'F',
+            CubeColor.BLUE: 'L',
+            CubeColor.GREEN: 'R',
+            CubeColor.ORANGE: 'B',
+            CubeColor.WHITE: 'D',
+            CubeColor.YELLOW: 'U',
+}
+
+
 class CubeRotation:
     def __init__(self, side, angle=90):
         self.side = side
@@ -33,6 +42,20 @@ class CubeSolver:
     def _addAlgorithm(self, cube, algorithm):
         for move in algorithm:
             self._addMove(cube, move)
+
+
+
+    def toElli(self):
+        s = ""
+        for move in self.moves:
+            if move.angle != 0:
+                s += elliMap[move.side]
+                move.angle %= 360
+                if move.angle == 180:
+                    s += '2'
+                elif move.angle == -90 or move.angle == 270:
+                    s += 'i'
+        return s
 
 
     def computeMoves(self):
@@ -336,5 +359,7 @@ if(__name__ == "__main__"):
         # testCube = getSolvedCube()
         solver = CubeSolver(testCube)
         solver.computeMoves()
+        print(solver.toElli())
+        print()
         print(len(solver.moves))
         
