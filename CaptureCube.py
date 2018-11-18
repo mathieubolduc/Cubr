@@ -4,7 +4,7 @@ import time
 from grid_detection import detect_grid, make_grid
 import matplotlib.pyplot as plt
 from matplotlib.colors import hsv_to_rgb
-from Cube import CubeColor, Cube
+from Cube import *
 
 
 
@@ -243,8 +243,14 @@ def show_webcam(mirror=False):
     for face in faces_mathieu_notation:
         side = face[1][1]
         cube.setSide(side, face)
+    check = 'a'
+    while not (check=='1' or check=='2'):
+        input("Use this cube (1), or use a random cube (2)?")
 
-    return cube
+    if check=='1':
+        return cube
+    else:
+        return getScrambledCube()
 
     # print("Press any key to exit...")
     # cv2.waitKey(0)
