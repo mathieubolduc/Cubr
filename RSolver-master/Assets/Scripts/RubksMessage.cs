@@ -12,7 +12,7 @@ namespace Application
 
     public class RubiksMessage
     {
-        public MessageType messageType;
+        public int messageType;
         public string Data;
     }
 }

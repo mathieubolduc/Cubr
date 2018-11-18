@@ -67,7 +67,7 @@ public class SceneManager : MonoBehaviour
             lock (messages)
             {
                 RubiksMessage m = new RubiksMessage();
-                m.messageType = MessageType.Connected;
+                m.messageType = (int)MessageType.Connected;
                 messages.Enqueue(m);
             }
         };
@@ -190,19 +190,27 @@ public class SceneManager : MonoBehaviour
                 while (messages.Count > 0)
                 {
                     RubiksMessage m = messages.Dequeue();
-                    if (m.messageType == MessageType.Reset)
+                    if (m.messageType == (int)MessageType.Reset)
                     {
                         Debug.Log("reseting");
                     }
-                    else if (m.messageType == MessageType.Initialize)
+                    else if (m.messageType == (int)MessageType.Initialize)
                     {
+                        Debug.Log("New Initialized");
+                        SolutionString = m.Data;
+                        SolutionArr = ParseMoves(SolutionString);
+                        RCP.ResetView();
+                        RCP.RC.RunCustomSequence(SubstringFromList(SolutionArr, true, 0, nextMove - 1));
+                        nextMove = 0;
+                        RCP.RefreshPanels();
+                        ui.OnInitialized();
                         //Reinitialize the cube
                     }
-                    else if (m.messageType == MessageType.Solution)
+                    else if (m.messageType == (int)MessageType.Solution)
                     {
 
                     }
-                    else if (m.messageType == MessageType.Connected)
+                    else if (m.messageType == (int)MessageType.Connected)
                     {
                         ui.OnConnected();
                         ui.WaitMessage("Waiting for Cube");
