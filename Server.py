@@ -32,9 +32,14 @@ async def hello(websocket, path):
         message = await websocket.recv()
         print(f"< {message}")
         if message == "Reset":
-            arg = json.dumps({'messageType': MessageType.Reset, 'Data': "Resetting"})
-            await websocket.send(arg)
-            print(f"> Sent {arg}")
+            cube = getScrambledCube()
+            solver = CubeSolver(cube)
+            solver.computeMoves()
+            solution = solver.toElli()
+
+            initial = json.dumps({'messageType': 1, 'Data': solution})
+            await websocket.send(initial)
+            print(f"> Sent {initial}")
 
 
 start_server = websockets.serve(hello, 'localhost', 8765)
