@@ -39,6 +39,14 @@ public class SceneManager : MonoBehaviour
     //UI
     public UIManager ui;
     private int connectionAttempts = 0;
+
+    //Input 
+    //Mouse Variables
+    private Vector2 m_delta;
+    private Vector2 m_currentMousePos;
+    private Vector2 m_lastMousePos;
+    public CameraController m_camera;
+
     void Start()
     {
         Camera.main.transform.position = cameraResetPos;
@@ -116,20 +124,22 @@ public class SceneManager : MonoBehaviour
         HandleInput();
 
         if (rotateCamera)
+        {
             Camera.main.transform.RotateAround(Vector3.zero, Vector3.up, Time.deltaTime * 10);
+        }
     }
 
     private void HandleInput()
     {
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            ScrambleCube();
-            SolutionString = Solve();
-            SolutionArr = ParseMoves(SolutionString);
-            Debug.Log(SolutionArr.Count);
-            nextMove = 0;
-            RCP.RefreshPanels();
-        }
+        //if (Input.GetKeyDown(KeyCode.S))
+        //{
+        //    ScrambleCube();
+        //    SolutionString = Solve();
+        //    SolutionArr = ParseMoves(SolutionString);
+        //    Debug.Log(SolutionArr.Count);
+        //    nextMove = 0;
+        //    RCP.RefreshPanels();
+        //}
 
         if (Input.GetKeyDown(KeyCode.N))
         {
@@ -178,6 +188,27 @@ public class SceneManager : MonoBehaviour
             if (socket_connected)
                 socket.Send("Reset");
         }
+
+        //Move Camera
+
+        m_currentMousePos = Input.mousePosition;
+
+        if (Input.GetMouseButton(1))
+        {
+            m_delta = m_currentMousePos - m_lastMousePos;
+            m_delta.x /= Screen.currentResolution.width;
+            m_delta.y /= Screen.currentResolution.height;
+        }
+        else
+        {
+            m_delta = Vector2.zero;
+        }
+
+
+        m_lastMousePos = m_currentMousePos;
+
+        m_camera.RotateBy(m_delta.y, m_delta.x);
+        m_camera.ZoomBy(-1 * Input.GetAxis("Mouse ScrollWheel"));
     }
 
     #region Websocket handling
