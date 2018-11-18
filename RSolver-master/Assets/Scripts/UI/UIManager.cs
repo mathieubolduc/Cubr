@@ -36,7 +36,6 @@ public class UIManager : MonoBehaviour {
     }
 
 
-
     public void ShowMove(string currentMove)
     {
 

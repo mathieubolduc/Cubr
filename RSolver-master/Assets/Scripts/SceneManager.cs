@@ -34,6 +34,7 @@ public class SceneManager : MonoBehaviour
     public WebSocket socket;
     public bool socket_connected;
     private bool connecting = false;
+    private bool initialized = false;
     private Coroutine connection_routine;
 
     //UI
@@ -121,7 +122,9 @@ public class SceneManager : MonoBehaviour
     public void Update()
     {
         HandleServerMessage();
-        HandleInput();
+        if(initialized){
+            HandleInput();
+        }
     }
 
     private void HandleInput()
@@ -180,8 +183,13 @@ public class SceneManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            if (socket_connected)
-                socket.Send("Reset");
+            //if (socket_connected)
+            //socket.Send("Reset");
+            RCP.ResetView();
+            RCP.RC.RunCustomSequence(SubstringFromList(SolutionArr, true, 0));
+            nextMove = 0;
+            RCP.RefreshPanels();
+
         }
 
         //Move Camera
@@ -219,6 +227,8 @@ public class SceneManager : MonoBehaviour
                     if (m.messageType == (int)MessageType.Reset)
                     {
                         Debug.Log("reseting");
+                        initialized = false;
+                        ui.OnConnected();
                     }
                     else if (m.messageType == (int)MessageType.Initialize)
                     {
@@ -226,10 +236,11 @@ public class SceneManager : MonoBehaviour
                         SolutionString = m.Data;
                         SolutionArr = ParseMoves(SolutionString);
                         RCP.ResetView();
-                        RCP.RC.RunCustomSequence(SubstringFromList(SolutionArr, true, 0, nextMove - 1));
+                        RCP.RC.RunCustomSequence(SubstringFromList(SolutionArr, true, 0));
                         nextMove = 0;
                         RCP.RefreshPanels();
                         ui.OnInitialized();
+                        initialized = true;
                         //Reinitialize the cube
                     }
                     else if (m.messageType == (int)MessageType.Solution)
