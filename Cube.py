@@ -70,9 +70,9 @@ class Cube:
     def setSide(self, side, data):
         center = centerMap[side]
         count = 0
-        for x in range(1, 4, 1) if center[0] == 2 else [center[0]]:
+        for z in range(1, 4, 1) if center[2] == 2 else [center[2]]:
             for y in range(1, 4, 1) if center[1] == 2 else [center[1]]:
-                for z in range(1, 4, 1) if center[2] == 2 else [center[2]]:
+                for x in range(1, 4, 1) if center[0] == 2 else [center[0]]:
                     self.hypercube[x][y][z] = data[count % 3][count // 3]
                     count += 1
 
@@ -81,9 +81,9 @@ class Cube:
         center = centerMap[side]
         count = 0
         data = np.zeros((3, 3))
-        for x in range(1, 4, 1) if center[0] == 2 else [center[0]]:
+        for z in range(1, 4, 1) if center[2] == 2 else [center[2]]:
             for y in range(1, 4, 1) if center[1] == 2 else [center[1]]:
-                for z in range(1, 4, 1) if center[2] == 2 else [center[2]]:
+                for x in range(1, 4, 1) if center[0] == 2 else [center[0]]:
                     data[count % 3][count // 3] = self.hypercube[x][y][z]
                     count += 1
         return data

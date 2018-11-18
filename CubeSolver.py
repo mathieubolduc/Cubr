@@ -1,5 +1,6 @@
 from Cube import *
 from collections import deque
+from Algorithms import *
 
 class CubeRotation:
     def __init__(self, side, angle=90):
@@ -27,6 +28,10 @@ class CubeSolver:
                     self.moves.pop()
             else:
                 self.moves.append(move)
+
+    def _addAlgorithm(self, cube, algorithm):
+        for move in algorithm:
+            self._addMove(cube, move)
 
 
     def computeMoves(self):
@@ -146,6 +151,53 @@ class CubeSolver:
                     self._addMove(cube, CubeRotation(corner[1]))
                     self._addMove(cube, CubeRotation(CubeColor.YELLOW))
                     self._addMove(cube, CubeRotation(corner[1], -90))
+
+        # F2L
+        for edge in [   [CubeColor.RED, CubeColor.BLUE],
+                        [CubeColor.BLUE, CubeColor.ORANGE],
+                        [CubeColor.ORANGE, CubeColor.GREEN],
+                        [CubeColor.GREEN, CubeColor.RED]]:
+            edgePos = cube.find(edge)
+            desiredPos = solvedCube.find(edge)
+            if not np.all([edgePos[i] == desiredPos[i] for i in range(2)]):
+                if edgePos[0][2] == 2:
+                    # already in the F2L, move it out
+                    x = edgePos[0][0]
+                    y = edgePos[0][1]
+                    currentSide = 0
+                    if x < 2 and y < 2:
+                        currentSide = CubeColor.BLUE
+                    elif x > 2 and y < 2:
+                        currentSide = CubeColor.RED
+                    elif x > 2 and y > 2:
+                        currentSide = CubeColor.GREEN
+                    elif x < 2 and y > 2:
+                        currentSide = CubeColor.ORANGE
+                    
+                    algo = rotateAlgo(F2L, currentSide)
+                    self._addAlgorithm(cube, algo)
+                    edgePos = cube.find(edge)
+
+                # on top, add it in
+                j = 0 if edgePos[0][2] == 3 else 1
+                while getSideFromPosition(edgePos[j]) != edge[j]:
+                    self._addMove(cube, CubeRotation(CubeColor.YELLOW))
+                    edgePos = cube.find(edge)
+                currentSide = getSideFromPosition(edgePos[j])
+                algo = rotateAlgo(F2L, currentSide)
+                sides = [CubeColor.RED, CubeColor.GREEN, CubeColor.ORANGE, CubeColor.BLUE]
+                left = sides[(sides.index(currentSide) + 1) % 4]
+                if edge[(j+1) % 2] != left:
+                    algo = flipAlgo(algo)
+                self._addAlgorithm(cube, algo)
+
+
+        # edge orientation
+        yellowFace = cube.getSide(CubeColor.YELLOW)
+        if yellowFace[0][1] != CubeColor.YELLOW:
+            ...
+
+
 
 
         print(cube.hypercube)
