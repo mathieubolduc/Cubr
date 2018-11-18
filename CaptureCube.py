@@ -76,7 +76,7 @@ def show_webcam(mirror=False):
                 cv2.circle(
                     img_focus, (x_focus+int(round(cd[0])), y_focus+int(round(cd[1]))), 2, (255, 255, 255), 2)
 
-            colour_names = get_colours_pointwise(img_focus,new_center_dots)
+            colour_names = get_colours_pointwise(img,new_center_dots)
             if cube_in_view == False:
                 print("I see a cube!")
                 print(colour_names)
@@ -166,14 +166,14 @@ def get_colours_pointwise(image, points):
         [70, 70, 170]  # ORANGE
     ]
     cv2.imwrite("test_vector.png", image)
-    colours_list = ['Red', 'Blue', 'Yellow', 'White', 'Green', 'Orange']
+    colours_list = ['Yellow', 'Red', 'Blue', 'White', 'Green', 'Orange']
     colours = np.zeros((3, 3), dtype='uint8')
 
     # convert RGB to better norm taking space
-    _image = cv2.cvtColor(image, cv2.COLOR_RGB2LAB)
-    boundaries_cvt = cv2.cvtColor(np.expand_dims(np.array(boundaries, dtype='uint8'), 1), cv2.COLOR_RGB2Lab)
-    boundaries_cvt = np.squeeze(boundaries_cvt, 1)
-
+    # _image = cv2.cvtColor(image, cv2.COLOR_RGB2LAB)
+    # boundaries_cvt = cv2.cvtColor(np.expand_dims(np.array(boundaries, dtype='uint8'), 1), cv2.COLOR_RGB2Lab)
+    # boundaries_cvt = np.squeeze(boundaries_cvt, 1)
+    boundaries_cvt = boundaries
     colour_names = []
 
     for j,(x,y) in enumerate(points):
