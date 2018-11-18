@@ -68,6 +68,27 @@ class Cube:
 
     """ Takes a side (WHITE, RED, etc) and a 3x3 array and stores it in the hypercube"""
     def setSide(self, side, data):
+
+        if side == CubeColor.WHITE:
+            data = np.rot90(data)
+        elif side == CubeColor.RED:
+            data = np.rot90(data, -1)
+            data = np.flip(data, axis = (1))
+            data = np.rot90(data, 2)
+        elif side == CubeColor.GREEN:
+            data = np.rot90(data, -1)
+            data = np.flip(data, axis = (1))
+            data = np.rot90(data, 2)
+        elif side == CubeColor.ORANGE:
+            data = np.rot90(data, -1)
+            data = np.rot90(data, 2)
+        elif side == CubeColor.BLUE:
+            data = np.rot90(data, -1)
+        elif side == CubeColor.YELLOW:
+            data = np.rot90(data, -1)
+            data = np.flip(data, axis = (1))
+            data = np.rot90(data, 2)
+
         center = centerMap[side]
         count = 0
         for z in range(1, 4, 1) if center[2] == 2 else [center[2]]:
@@ -160,10 +181,5 @@ class Cube:
 """ tests"""
 if(__name__ == "__main__"):
     testCube = getSolvedCube()
-    testCube.rotate(CubeColor.RED)
-    location = testCube.find([CubeColor.WHITE, CubeColor.RED])
-    print(location)
-    print(testCube.hypercube[location[0][0], location[0][1], location[0][2]])
-    print(testCube.hypercube[location[1][0], location[1][1], location[1][2]])
-    
-    print(testCube.hypercube)
+    testCube.rotate(CubeColor.WHITE)
+    testCube.rotate(CubeColor.YELLOW)
