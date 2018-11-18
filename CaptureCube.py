@@ -5,6 +5,9 @@ from grid_detection import detect_grid, make_grid
 
 def show_webcam(mirror=False):
     cam = cv2.VideoCapture(0)
+    cam.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
+    cam.set(cv2.CAP_PROP_EXPOSURE,0.01)
+
     delay_max = 20
     delay_cntr = 0
 
@@ -14,9 +17,10 @@ def show_webcam(mirror=False):
     cube_in_view = False
     image_save = []
     capture_images = True
-
+    new_center_dots =None
     while capture_images:
         ret_val, img = cam.read()
+
         if mirror:
             img = cv2.flip(img, 1)
 
@@ -62,17 +66,33 @@ def show_webcam(mirror=False):
         #cv2.imshow("contours", img_contours)
 
         # Grid detection
-        if len(centers) > 5: # we have a face
-            length, std_dev, angle1, angle2, center_point = detect_grid(centers)
-            if std_dev<10:
-                new_center_dots = make_grid(
-                    length, angle1, angle2, center_point)
-                assert len(new_center_dots)==9
-                for cd in new_center_dots:
-                    cv2.circle(
-                        img_focus, (x_focus+int(round(cd[0])), y_focus+int(round(cd[1]))), 2, (255, 255, 255), 2)
+        length, std_dev, angle1, angle2, center_point = detect_grid(centers)
+        if len(centers) > 5 and std_dev<10: # we have a face
+            delay_cntr=0
+            new_center_dots = make_grid(
+                length, angle1, angle2, center_point)
+            # assert len(new_center_dots)==9
+            for cd in new_center_dots:
+                cv2.circle(
+                    img_focus, (x_focus+int(round(cd[0])), y_focus+int(round(cd[1]))), 2, (255, 255, 255), 2)
 
+            colour_names = get_colours_pointwise(img_focus,new_center_dots)
+            if cube_in_view == False:
+                print("I see a cube!")
+                print(colour_names)
+            cube_in_view = True
 
+        elif delay_cntr<delay_max and new_center_dots is not None: # draw the circles if were still in delay
+            for cd in new_center_dots:
+                cv2.circle(
+                    img_focus, (x_focus + int(round(cd[0])), y_focus + int(round(cd[1]))), 2, (255, 255, 255), 2)
+            delay_cntr+=1
+
+        elif delay_cntr>=delay_max and cube_in_view==True: #cube just left view
+            cube_in_view=False
+            print("Cube is gone")
+
+        # Peters Grid detection
         # if len(centers)==9: # 9 centers
         #     x_points = [x for x,y in centers]
         #     y_points = [y for x,y in centers]
@@ -103,16 +123,12 @@ def show_webcam(mirror=False):
         #             print("I see a cube!")
         #             # save data at pixel points
         #             image_save = focus
-        #
-        #
         #             # stop image capturing
         #             # capture_images = False
         #
         #             names = get_colours_vector(image_save, x_mean_save, y_mean_save)
         #
-        #
         #             print(names)
-        #
         #
         # elif delay_cntr<delay_max and len(x_mean_save)>0 and len(y_mean_save)>0: # draw the circles if were still in delay
         #     for x in mean_x:
@@ -140,10 +156,40 @@ def show_webcam(mirror=False):
     cv2.waitKey(0)
 
 
-def get_colours_pointwise():
-    pass
+def get_colours_pointwise(image, points):
+    boundaries = [  # Colours in BRG
+        [75, 150,101],  # YELLOW
+        [72, 45, 155],  # RED
+        [125, 51, 15],  # BLUE
+        [140, 127, 110],  # WHITE
+        [67, 96, 11],  # GREEN
+        [70, 70, 170]  # ORANGE
+    ]
+    cv2.imwrite("test_vector.png", image)
+    colours_list = ['Red', 'Blue', 'Yellow', 'White', 'Green', 'Orange']
+    colours = np.zeros((3, 3), dtype='uint8')
 
+    # convert RGB to better norm taking space
+    _image = cv2.cvtColor(image, cv2.COLOR_RGB2LAB)
+    boundaries_cvt = cv2.cvtColor(np.expand_dims(np.array(boundaries, dtype='uint8'), 1), cv2.COLOR_RGB2Lab)
+    boundaries_cvt = np.squeeze(boundaries_cvt, 1)
 
+    colour_names = []
+
+    for j,(x,y) in enumerate(points):
+        colour_ind = 0 #default
+        x=int(round(x))
+        y=int(round(y))
+        best_dist = np.inf
+        for i,bound in enumerate(boundaries_cvt):
+            pixels_ave = np.mean(image[x - 1:x + 1, y - 1:y + 1], axis=(0,1))
+            dist = np.linalg.norm(bound - pixels_ave)
+            if dist < best_dist:
+                best_dist = dist
+                colour_ind = i
+        colour_names.append(colours_list[colour_ind])
+
+    return colour_names
 
 def get_colours(image, x_mean, y_mean):
     # colour boundarues
@@ -186,13 +232,13 @@ def get_colours(image, x_mean, y_mean):
 
 
 def get_colours_vector(image, x_mean, y_mean):
-    boundaries =[ # Colours in RGB
-        [75, 150, 125],  # YELLOW
-        [72, 45, 115],  # RED
-        [125, 55, 30], # BLUE
-        [127, 127, 127],  # WHITE
-        [70, 120, 34],  # GREEN
-        [70, 70, 170] # ORANGE
+    boundaries =[ # Colours in BRG
+        [101, 150, 75],  # YELLOW
+        [115, 45, 72],  # RED
+        [15, 51, 125], # BLUE
+        [110, 127, 140],  # WHITE
+        [11, 96, 67],  # GREEN
+        [170, 70, 70] # ORANGE
     ]
     cv2.imwrite("test_vector.png", image)
     colours_list = ['Red', 'Blue', 'Yellow', 'White', 'Green', 'Orange']
@@ -200,7 +246,9 @@ def get_colours_vector(image, x_mean, y_mean):
 
     # convert RGB to better norm taking space
     _image = cv2.cvtColor(image, cv2.COLOR_RGB2LAB)
-    boundaries_cvt = [cv2.cvtColor(bound, cv2.COLOR_RGB2LAB) for bound in boundaries]
+    boundaries_cvt = cv2.cvtColor(np.expand_dims(np.array(boundaries, dtype='uint8'),1), cv2.COLOR_RGB2Lab)
+    boundaries_cvt = np.squeeze(boundaries_cvt, 1)
+    print(boundaries_cvt[0])
     for j,x in enumerate(x_mean):
         for k,y in enumerate(y_mean):
             best_dist = 1000
