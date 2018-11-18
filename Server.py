@@ -5,6 +5,8 @@
 import asyncio
 import websockets
 import json
+from Cube import *
+from CubeSolver import *
 from enum import Enum
 
 class MessageType(Enum):
@@ -16,8 +18,14 @@ class MessageType(Enum):
 async def hello(websocket, path):
     print("Connection Established");
 
-    # greeting = json.dumps({'messageType': MessageType.Initialize, 'Data': "Resetting"})
-    # await websocket.send(greeting)
+    cube = getScrambledCube()
+    solver = CubeSolver(cube)
+    solver.computeMoves()
+    solution = solver.toElli()
+
+    initial = json.dumps({'messageType': 1  , 'Data': solution})
+
+    await websocket.send(initial)
     # print(f"> {greeting}")
 
     while True:
