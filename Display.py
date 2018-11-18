@@ -59,5 +59,4 @@ def plotCube(cube):
     
 """ tests"""
 if(__name__ == "__main__"):
-    testCube = getScrambledCube()
-    plotCube(testCube)
+    ...

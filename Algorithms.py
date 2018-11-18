@@ -80,3 +80,16 @@ GHOST       = [ CubeRotation(CubeColor.BLUE, 90),
                 CubeRotation(CubeColor.BLUE, -90),
                 CubeRotation(CubeColor.WHITE, -90),
                 ]
+
+PLL_H       = [ CubeRotation(CubeColor.BLUE, 180),
+                CubeRotation(CubeColor.GREEN, 180),
+                CubeRotation(CubeColor.WHITE, 90),
+                CubeRotation(CubeColor.BLUE, 90),
+                CubeRotation(CubeColor.GREEN, -90),
+                CubeRotation(CubeColor.ORANGE, 180),
+                CubeRotation(CubeColor.BLUE, -90),
+                CubeRotation(CubeColor.GREEN, 90),
+                CubeRotation(CubeColor.WHITE, 90),
+                CubeRotation(CubeColor.BLUE, 180),
+                CubeRotation(CubeColor.GREEN, 180)
+                ]
