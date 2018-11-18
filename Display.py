@@ -3,7 +3,8 @@ import matplotlib.colors as colors
 import pylab as pl
 from Cube import *
 
-colorMap = {CubeColor.WHITE: 'w',
+colorMap = {CubeColor.UNKNOWN: '#D3D3D3',
+            CubeColor.WHITE: 'w',
             CubeColor.YELLOW: 'y',
             CubeColor.RED: 'r',
             CubeColor.ORANGE: '#FFA500',
