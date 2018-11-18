@@ -4,11 +4,11 @@ from Algorithms import *
 from Display import plotCube
 
 elliMap = { CubeColor.RED: 'F',
-            CubeColor.BLUE: 'L',
-            CubeColor.GREEN: 'R',
+            CubeColor.BLUE: 'R',
+            CubeColor.GREEN: 'L',
             CubeColor.ORANGE: 'B',
-            CubeColor.WHITE: 'D',
-            CubeColor.YELLOW: 'U',
+            CubeColor.WHITE: 'U',
+            CubeColor.YELLOW: 'D',
 }
 
 def _doMove(cube, move):
@@ -259,6 +259,7 @@ class CubeSolver:
             cube.rotate(CubeColor.YELLOW)
         else:
             # random sune
+            print("random sune")
             self._addAlgorithm(cube, SUNE)
             for i in range(4):
                 good = 0
@@ -274,6 +275,7 @@ class CubeSolver:
                 cube.rotate(CubeColor.YELLOW)
                     
         if good == 1:
+            print(f"sune around {currentSide}")
             algo = rotateAlgo(SUNE, currentSide)
             self._addAlgorithm(cube, algo)
             for side in [CubeColor.RED, CubeColor.BLUE, CubeColor.ORANGE, CubeColor.GREEN]:
@@ -281,6 +283,7 @@ class CubeSolver:
                 edgePos = cube.find(edge)
                 desiredPos = solvedCube.find(edge)
                 if not np.all([edgePos[i] == desiredPos[i] for i in range(2)]):
+                    print(f"second sune around {currentSide}")
                     self._addAlgorithm(cube, algo)
                     break
 
@@ -340,20 +343,14 @@ class CubeSolver:
                 cornerPos = cube.find(corner)
             self._addMove(cube, CubeRotation(CubeColor.YELLOW, -90))
 
-        plotCube(cube)
-
 
 
 
 
 """ tests"""
 if(__name__ == "__main__"):
-    for _ in range(1):
+    for _ in range(100):
         testCube = getScrambledCube()
-        # testCube = getSolvedCube()
         solver = CubeSolver(testCube)
         solver.computeMoves()
-        print(solver.toElli())
-        print()
-        print(len(solver.moves))
         
