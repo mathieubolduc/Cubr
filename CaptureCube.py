@@ -5,6 +5,7 @@ from grid_detection import detect_grid, make_grid
 import matplotlib.pyplot as plt
 from matplotlib.colors import hsv_to_rgb
 from Cube import CubeColor, Cube
+from Display import plotCube
 
 
 
@@ -187,7 +188,7 @@ def show_webcam(mirror=False):
 
                     face_data_array.append(names)
                     face_cntr+=1
-                    if face_cntr==5:
+                    if face_cntr==6:
                         print("All faces captured!")
                         break;
                     else:
@@ -209,6 +210,7 @@ def show_webcam(mirror=False):
         cv2.imshow("box", img_focus)  # image with box
         cv2.imshow("squares", img_centers)
         if cv2.waitKey(1) == 27:
+            exit(1)
             break  # esc to quit
     #cv2.destroyAllWindows()
 
@@ -235,7 +237,7 @@ def show_webcam(mirror=False):
                 print("invalid name passed to look up")
             correct_names.append(correct_name)
         correct_names = np.asarray(correct_names).reshape(3, 3)
-        print(correct_names)
+        #print(correct_names)
         faces_mathieu_notation.append(correct_names)
 
     cube = Cube()
@@ -243,7 +245,7 @@ def show_webcam(mirror=False):
     for face in faces_mathieu_notation:
         side = face[1][1]
         cube.setSide(side, face)
-
+    plotCube(cube)
     return cube
 
     # print("Press any key to exit...")
@@ -301,7 +303,7 @@ def get_colours_pointwise(image, points, x_offset, y_offset):
 
 
 def get_colours(image, x_mean, y_mean):
-    # colour boundarues
+    # colour boundaries
     boundaries = [  # BGR
         ([85, 95, 95], [255, 255, 255]),  # WHITE
         ([35, 130, 100], [95, 174, 150]),  # YELLOW
@@ -330,7 +332,7 @@ def get_colours(image, x_mean, y_mean):
         lower = np.array(bounds[0], dtype='uint8')
         upper = np.array(bounds[1], dtype='uint8')
         mask = cv2.inRange(_image, lower, upper)
-        print(colours_list[i])
+        # print(colours_list[i])
         # plt.imshow(mask)
         # plt.show()
         for j, x in enumerate(x_mean):
@@ -377,7 +379,6 @@ def get_colours_vector(image, x_mean, y_mean):
             colours[j, k] = colour_ind
 
     colour_names = [colours_list[i] for i in colours.flatten()]
-
     return colour_names
 
 
