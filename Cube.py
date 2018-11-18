@@ -82,6 +82,7 @@ class Cube:
         elif side == CubeColor.ORANGE:
             data = np.rot90(data, -1)
             data = np.rot90(data, 2)
+            data = np.rot90(data, 2)
         elif side == CubeColor.BLUE:
             data = np.rot90(data, -1)
         elif side == CubeColor.YELLOW:
@@ -174,6 +175,45 @@ class Cube:
                             return result
 
         return None
+
+    # def hackfix(self):
+    #     colorCount = {}
+    #     for color in CubeColor.ALL:
+    #         colorCount[color] = 0
+    #         face = self.getSide(color)
+    #         for cubie in face.flatten():
+    #             colorCount[cubie] += 1
+
+    #     notenough = []
+    #     toomuch = []
+
+    #     for key in colorCount:
+    #         if colorCount[key] < 9:
+    #             notenough.append(key)
+    #         elif colorCount[key] > 9:
+    #             toomuch.append(key)
+
+    #     if not np.all([colorCount[key] == 9 for key in colorCount]):
+
+
+    #         # edges
+    #         edges = [   [CubeColor.WHITE, CubeColor.RED],
+    #                     [CubeColor.WHITE, CubeColor.BLUE],
+    #                     [(3, 2, 0), (4, 2, 1)],
+    #                     [(2, 3, 0), (2, 4, 1)],
+    #                     [(1, 0, 2), (0, 1, 2)],
+    #                     [(3, 0, 2), (4, 1, 2)],
+    #                     [(0, 3, 2), (1, 4, 2)],
+    #                     [(4, 3, 2), (3, 4, 2)],
+    #                     [(2, 1, 4), (2, 0, 3)],
+    #                     [(1, 2, 4), (0, 2, 3)],
+    #                     [(3, 2, 4), (4, 2, 3)],
+    #                     [(2, 3, 4), (2, 4, 3)]]
+    #         for edge in edges:
+    #             if self.find(edge) is None:
+    #                 for i in range(2):
+    #                     if edge[i] in notenough
+
 
 
 
