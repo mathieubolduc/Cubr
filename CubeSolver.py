@@ -11,12 +11,6 @@ elliMap = { CubeColor.RED: 'F',
             CubeColor.YELLOW: 'U',
 }
 
-
-class CubeRotation:
-    def __init__(self, side, angle=90):
-        self.side = side
-        self.angle = angle
-        
 def _doMove(cube, move):
     cube.rotate(move.side, move.angle)
 

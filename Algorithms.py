@@ -1,6 +1,11 @@
-from CubeSolver import CubeRotation
 from Cube import CubeColor, Cube
 
+
+
+class CubeRotation:
+    def __init__(self, side, angle=90):
+        self.side = side
+        self.angle = angle
         
 
 def rotateAlgo(algorithm, facing=CubeColor.RED):
