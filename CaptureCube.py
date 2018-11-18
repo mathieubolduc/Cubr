@@ -5,13 +5,16 @@ from grid_detection import detect_grid, make_grid
 import matplotlib.pyplot as plt
 from matplotlib.colors import hsv_to_rgb
 from Cube import *
+import Display
 
 
 
 def show_webcam(mirror=False):
-    choice = input("Scan real cube? (y/n)")
+    choice = input("Scan real cube? (y/n)\n")
     if choice != "y":
-        return getScrambledCube()
+        cube = getScrambledCube()
+        Display.plotCube(cube)
+        return cube
     cam = cv2.VideoCapture(0)
     cam.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
     # cam.set(cv2.CAP_PROP_EXPOSURE,0.01)
@@ -60,6 +63,7 @@ def show_webcam(mirror=False):
 
     print("Position the cube so that the red face is towards the camera and the white face is down")
     print("tldr: Red Forward, White Down/Yellow Up")
+
     while capture_images:
         ret_val, img = cam.read()
 
@@ -190,7 +194,7 @@ def show_webcam(mirror=False):
 
                     face_data_array.append(names)
                     face_cntr+=1
-                    if face_cntr==5:
+                    if face_cntr==6:
                         print("All faces captured!")
                         break;
                     else:
@@ -238,7 +242,7 @@ def show_webcam(mirror=False):
                 print("invalid name passed to look up")
             correct_names.append(correct_name)
         correct_names = np.asarray(correct_names).reshape(3, 3)
-        print(correct_names)
+        #print(correct_names)
         faces_mathieu_notation.append(correct_names)
 
     cube = Cube()
@@ -246,14 +250,10 @@ def show_webcam(mirror=False):
     for face in faces_mathieu_notation:
         side = face[1][1]
         cube.setSide(side, face)
-    check = 'a'
-    while not (check=='1' or check=='2'):
-        input("Use this cube (1), or use a random cube (2)?")
 
-    if check=='1':
-        return cube
-    else:
-        return getScrambledCube()
+    Display.plotCube(cube)
+    return cube
+
 
     # print("Press any key to exit...")
     # cv2.waitKey(0)
@@ -339,7 +339,7 @@ def get_colours(image, x_mean, y_mean):
         lower = np.array(bounds[0], dtype='uint8')
         upper = np.array(bounds[1], dtype='uint8')
         mask = cv2.inRange(_image, lower, upper)
-        print(colours_list[i])
+        # print(colours_list[i])
         # plt.imshow(mask)
         # plt.show()
         for j, x in enumerate(x_mean):
