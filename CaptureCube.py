@@ -4,7 +4,7 @@ import time
 from grid_detection import detect_grid, make_grid
 import matplotlib.pyplot as plt
 from matplotlib.colors import hsv_to_rgb
-from Cube import CubeColor
+from Cube import CubeColor, Cube
 
 
 
@@ -238,8 +238,16 @@ def show_webcam(mirror=False):
         print(correct_names)
         faces_mathieu_notation.append(correct_names)
 
-    print("Press any key to exit...")
-    cv2.waitKey(0)
+    cube = Cube()
+
+    for face in faces_mathieu_notation:
+        side = face[1][1]
+        cube.setSide(side, face)
+
+    return cube
+
+    # print("Press any key to exit...")
+    # cv2.waitKey(0)
 
 
 def get_colours_pointwise(image, points, x_offset, y_offset):
